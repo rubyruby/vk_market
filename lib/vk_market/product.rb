@@ -17,7 +17,7 @@ module VkMarket
       @owner_id = options['owner_id']
       @title = options['title']
       @description = options['description']
-      @price = options['price']['amount'] / 100.0
+      @price = options['price']['amount'].to_i / 100.0
       @currency = options['price']['currency']['id']
       @category = options['category']['id']
       @date = options['date']
