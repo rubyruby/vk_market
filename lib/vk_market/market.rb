@@ -36,10 +36,20 @@ module VkMarket
 
     def get
       log 'get products'
-      products = @vk.market.get(owner_id: @shop, extended: true)
-      products.shift
-      products.map { |json| Product.parse(json) }
-      # TODO: pagination
+      loaded = 0
+      per_page = 200
+      list = []
+      count = 1
+      while count > loaded
+        products = @vk.market.get(owner_id: @shop, extended: true, count: per_page, offset: loaded)
+        count = products.shift
+        products.each do |json|
+          list << Product.parse(json)
+        end
+        loaded += per_page
+        sleep 0.4
+      end
+      list
     end
 
     def add(product)
