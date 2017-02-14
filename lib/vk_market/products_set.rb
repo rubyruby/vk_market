@@ -53,6 +53,7 @@ module VkMarket
             @market.add(product)
           end
         end
+        sleep 1
       end
     end
 
