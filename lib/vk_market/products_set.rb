@@ -46,8 +46,8 @@ module VkMarket
         else
           # maybe it is deleted?
           deleted_product = @market.get_by_id(product.id)
-          @products << deleted_product
           if deleted_product
+            @products << deleted_product
             update(product, deleted_product)
           else
             @market.add(product)
