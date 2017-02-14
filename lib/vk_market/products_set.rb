@@ -50,7 +50,7 @@ module VkMarket
             @products << deleted_product
             update(product, deleted_product)
           else
-            @market.add(product)
+            insert(product)
           end
         end
         sleep 1
@@ -81,6 +81,11 @@ module VkMarket
       product.fill_missing(original)
       @market.edit(product)
       product.sync_albums(@market, original.albums_ids)
+    end
+
+    def insert(product)
+      @market.add(product)
+      product.sync_albums(@market, [])
     end
   end
 end
