@@ -24,6 +24,7 @@ module VkMarket
     end
 
     def log(data)
+      return unless @logger
       @logger.info data
     end
 

@@ -46,11 +46,13 @@ module VkMarket
         @photo_id = market.upload(@photo_path, nil, 1)
         @photo_path = nil
       end
-      @photo_paths = @photo_paths[0..3]
-      @photo_ids = @photo_paths.map do |photo_path|
-        market.upload(photo_path, nil, 0)
+      if @photo_paths.size > 0
+        @photo_paths = @photo_paths[0..3]
+        @photo_ids = @photo_paths.map do |photo_path|
+          market.upload(photo_path, nil, 0)
+        end
+        @photo_paths = []
       end
-      @photo_paths = []
     end
 
     def sync_albums(market, old_albums = [])
@@ -60,6 +62,11 @@ module VkMarket
         old_albums = []
       end
       market.add_to_album(self, @albums_ids - old_albums)
+    end
+
+    def fill_missing(other)
+      @photo_id = other.photo_id
+      @photo_ids = other.photo_ids
     end
 
     class << self

@@ -10,3 +10,5 @@ require 'vk_market/product'
 require 'vk_market/photo'
 require 'vk_market/album'
 require 'vk_market/products_set'
+
+sadasas

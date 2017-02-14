@@ -42,15 +42,13 @@ module VkMarket
       other.products.each do |product|
         original = find_product_by_id(product.id)
         if original
-          @market.edit(product)
-          product.sync_albums(@market, original.albums_ids)
+          update(product, original)
         else
           # maybe it is deleted?
           deleted_product = @market.get_by_id(product.id)
           @products << deleted_product
           if deleted_product
-            @market.edit(product)
-            product.sync_albums(@market, deleted_product.albums_ids)
+            update(product, deleted_product)
           else
             @market.add(product)
           end
@@ -76,6 +74,13 @@ module VkMarket
           this
         end
       end
+    end
+
+    def update(product, original)
+      @market.log 'fill missing?'
+      product.fill_missing(original)
+      @market.edit(product)
+      product.sync_albums(@market, original.albums_ids)
     end
   end
 end
