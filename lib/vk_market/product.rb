@@ -9,7 +9,7 @@ module VkMarket
     attr_accessor :id, :owner_id, :title, :description, :price, :currency,
                   :category, :date, :availability, :albums_ids, :photos,
                   :photo_paths, :photo_path, :deleted, :last_photo_updated_at,
-                  :last_vk_photo, :position
+                  :last_vk_photo, :position, :object
     attr_reader :photo_id, :photo_ids
 
     def parse(options)
