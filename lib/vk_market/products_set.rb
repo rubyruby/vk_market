@@ -77,7 +77,6 @@ module VkMarket
     end
 
     def update(product, original)
-      @market.log 'fill missing?'
       product.fill_missing(original)
       @market.edit(product)
       product.sync_albums(@market, original.albums_ids)
