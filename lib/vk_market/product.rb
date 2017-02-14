@@ -10,6 +10,7 @@ module VkMarket
                   :category, :date, :availability, :albums_ids, :photos,
                   :photo_paths, :photo_path, :deleted, :last_photo_updated_at,
                   :last_vk_photo, :position
+    attr_reader :photo_id, :photo_ids
 
     def parse(options)
       @id = options['id']
