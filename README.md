@@ -1,8 +1,6 @@
 # VkMarket
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/vk_market`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This gem used to sync your products with VK Market
 
 ## Installation
 
@@ -20,17 +18,78 @@ Or install it yourself as:
 
     $ gem install vk_market
 
+It is important to use latest version of `vkontakte_api` gem with `market.` namespace support. Be sure you required the latest version in your Gemfile
+
+```ruby
+gem 'vkontakte_api', github: '7even/vkontakte_api'
+```
+
 ## Usage
 
-TODO: Write usage instructions here
+First call intializer with your VK APP credentials
 
-## Development
+```ruby
+market = VkMarket::Market.new(options, shop_id)
+```
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+`shop_id` is some negative number with group id
+`options` is a hash with string keys:
+* `'app_id'` is provided by VK App settings
+* `'app_secret'` is provided by VK App settings
+* `'redirect_uri'` any url when userless authentication
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+You can also setup logger to debug what's happens
+
+```ruby
+market.logger = Logger.new($stdout)
+```
+
+Next you must authenticate. This gem support userless authentication by typing login and password in login form. It is not good solution but it is only way for unapproved VK application to authenticate without youser.
+
+```ruby
+market.auth(options)
+```
+
+`options` is a hash with string keys:
+* `'login'` is email or phone for vk login
+* `'password'` is vk password
+
+After authentication you must generate two product sets. One is product set from vk.com market
+
+```ruby
+products = VkMarket::ProductsSet.new
+products.read_from_shop(market)
+```
+
+Second is your actual products list
+
+```ruby
+my_products = VkMarket::ProductsSet.new
+```
+
+You can fill it with VkMarket::Product instances
+
+```ruby
+product = VkMarket::Product.new
+product.title = 'Product title'
+product.description = 'Product description'
+product.id = 574_442 # id of product if it was previously synced. Left it blank to create new product
+product.category = 601 # id of category from VK Market categories list
+product.price = 199
+product.deleted = 0
+product.photo_path = 'path/to/main/image.jpg'
+product.photo_paths << 'path/to/some/extra/image.jpg' # up to 4 extra images allowed
+product.albums_ids = [2] # list of album ids
+product.position = 10 # position used for reorder product in albums. Product with mininal position is on top
+my_products.products << product # add new product to ProductSet
+```
+
+The last step is to run sync on you old products with new set
+
+```ruby
+products.sync_market(my_products)
+```
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/vk_market.
-
+Bug reports and pull requests are welcome on ruslan@13f.ru.
