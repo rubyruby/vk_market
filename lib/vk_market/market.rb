@@ -45,7 +45,7 @@ module VkMarket
     def add(product)
       product.save_images(self)
       resp = @vk.market.add(product.to_params(owner_id: @shop))
-      log resp
+      product.id = resp['market_item_id']
     end
 
     def edit(product)
