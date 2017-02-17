@@ -3,9 +3,10 @@ module VkMarket
     def initialize
       @products = []
       @albums = []
+      @report = []
     end
 
-    attr_accessor :products, :albums
+    attr_accessor :products, :albums, :report
 
     def read_from_shop(market)
       @market = market
@@ -36,6 +37,10 @@ module VkMarket
       hash
     end
 
+    def after_save(&block)
+      @after_save_callback = block
+    end
+
     private
 
     def save_new_and_update_old_products(other)
@@ -53,7 +58,7 @@ module VkMarket
             insert(product)
           end
         end
-        sleep 1
+        @after_save_callback.call(product) if @after_save_callback
       end
     end
 
@@ -69,9 +74,14 @@ module VkMarket
     def reorder_products_in_albums(other)
       other.products_by_alumbs.each do |album, products|
         list = products.sort_by(&:position)
-        list.reduce do |after, this|
+        list.select(&:saved).reduce do |after, this|
           # "insert #{this} after #{after}"
-          @market.reorder_items(album, this.id, after: after.id)
+          begin
+            @market.reorder_items(album, this.id, after: after.id)
+          rescue VkontakteApi::Error => exception
+            @market.log exception
+            @report << [this, exception.message]
+          end
           this
         end
       end
@@ -81,11 +91,21 @@ module VkMarket
       product.fill_missing(original)
       @market.edit(product)
       product.sync_albums(@market, original.albums_ids)
+      @report << [product, :updated]
+      product.saved = true
+    rescue VkontakteApi::Error => exception
+      @market.log exception
+      @report << [product, exception.message]
     end
 
     def insert(product)
       @market.add(product)
       product.sync_albums(@market, [])
+      @report << [product.title, :created]
+      product.saved = true
+    rescue VkontakteApi::Error => exception
+      @market.log exception
+      @report << [product, exception.message]
     end
   end
 end

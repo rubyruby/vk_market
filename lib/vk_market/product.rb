@@ -8,8 +8,8 @@ module VkMarket
 
     attr_accessor :id, :owner_id, :title, :description, :price, :currency,
                   :category, :date, :availability, :albums_ids, :photos,
-                  :photo_paths, :photo_path, :deleted, :last_photo_updated_at,
-                  :last_vk_photo, :position, :object
+                  :photo_paths, :photo_path, :deleted, :photo_updated,
+                  :last_vk_photo, :position, :object, :saved
     attr_reader :photo_id, :photo_ids
 
     def parse(options)
@@ -43,6 +43,7 @@ module VkMarket
     end
 
     def save_images(market)
+      return if !@photo_updated && @photo_id
       unless @photo_path.to_s.empty?
         @photo_id = market.upload(@photo_path, nil, 1)
         @photo_path = nil
