@@ -34,6 +34,20 @@ module VkMarket
       @vk = VkontakteApi::Client.new(@auth.token)
     end
 
+    def auth_browser
+      @auth = Auth.new(self)
+      url = @auth.authorizate_with_browser
+      {
+        url: url,
+        state: @auth.state
+      }
+    end
+
+    def auth_code(code)
+      @vk = VkontakteApi.authorize(code: code)
+      @vk.is_app_user?
+    end
+
     def get
       log 'get products'
       loaded = 0

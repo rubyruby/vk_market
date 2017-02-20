@@ -16,9 +16,11 @@ module VkMarket
 
     def sync_market(other)
       raise StandardError, 'No market assigned with this set' unless @market
+      @market.log 'sync start'
       save_new_and_update_old_products(other)
       mark_as_deleted_missing_products(other)
       reorder_products_in_albums(other)
+      @market.log 'sync end'
     end
 
     def find_product_by_id(product_id)

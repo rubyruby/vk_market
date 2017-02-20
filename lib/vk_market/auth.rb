@@ -1,6 +1,6 @@
 module VkMarket
   class Auth
-    def initialize(market, secret)
+    def initialize(market, secret = nil)
       @market = market
       @secret = secret
     end
@@ -11,7 +11,12 @@ module VkMarket
       parse_token
     end
 
-    attr_reader :token
+    def authorizate_with_browser(scope = [:market, :photos])
+      receive_browser_url(scope)
+      @url
+    end
+
+    attr_reader :token, :state
 
     private
 
@@ -22,6 +27,16 @@ module VkMarket
         scope: scope,
         state: @state,
         type: :client
+      )
+      @market.log "AUTH: go to url: #{@url}"
+    end
+
+    def receive_browser_url(scope)
+      @market.log 'AUTH: begin'
+      @state = Digest::MD5.hexdigest(rand.to_s)
+      @url = VkontakteApi.authorization_url(
+        scope: scope,
+        state: @state
       )
       @market.log "AUTH: go to url: #{@url}"
     end
