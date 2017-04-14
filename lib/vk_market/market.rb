@@ -72,6 +72,14 @@ module VkMarket
       sleep 0.4
       resp = @vk.market.add(product.to_params(owner_id: @shop))
       product.id = resp['market_item_id']
+    rescue NoMethodError
+      if @failed
+        return
+      else
+        @failed = true
+        sleep 1
+        retry
+      end
     end
 
     def edit(product)
