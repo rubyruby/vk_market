@@ -49,7 +49,7 @@ module VkMarket
     end
 
     def get
-      log 'get products'
+      log 'get products (0.1.8)'
       loaded = 0
       per_page = 200
       list = []

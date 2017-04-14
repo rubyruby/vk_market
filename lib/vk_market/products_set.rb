@@ -75,7 +75,9 @@ module VkMarket
 
     def reorder_products_in_albums(other)
       other.products_by_alumbs.each do |album, products|
-        next if products.map(&:position).all?(&:nil?)
+        @market.log 'Reorder album?'
+        next if products.map(&:position).uniq.size < 2
+        @market.log "orders: #{products.map(&:position).join(',')}"
         list = products.sort_by(&:position)
         list.select(&:saved).reduce do |after, this|
           # "insert #{this} after #{after}"
